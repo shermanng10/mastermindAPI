@@ -1,8 +1,13 @@
 import {InvalidInput} from '../libs/Exceptions'
 
+let _color = new WeakMap()
 export default class Peg {
 	constructor(color){
-		this.color = this._validate_color(color)
+		_color.set(this, this._validate_color(color))
+	}
+
+	getColor(){
+		return _color.get(this)
 	}
 
 	_validate_color(color){
