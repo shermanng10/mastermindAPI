@@ -1,0 +1,23 @@
+exports.numElementsInSamePosition = function(array1, array2){
+	let num = 0
+	for (let i = 0; i < array1.length; i++){
+		if (array1[i] == array2[i]){
+			num++
+		}
+	}
+	return num
+}
+
+exports.numSameElements = function (array1, array2){
+	let num = 0
+	for (let i = 0; i < array1.length; i++){
+		let index = array2.indexOf(array1[i])
+		if (index > -1){
+			array2.splice(index, 1)
+			num ++
+		}
+	}
+	return num
+}
+
+
