@@ -9,18 +9,20 @@ const Mastermind = (function(){
 	const _gameWon = new WeakMap()
 
 	class Mastermind {
-		constructor(){
-			_answerRow.set(this, this._randomAnswerRow())
-			_guessRows.set(this, [])
-			_keyRows.set(this, [])
-			_gameWon.set(this, false)
+		constructor(answerRow, guessRows, keyRows, gameWon){
+			_answerRow.set(this, answerRow || this._randomAnswerRow())
+			_guessRows.set(this, guessRows || [])
+			_keyRows.set(this, keyRows || [])
+			_gameWon.set(this, gameWon || false)
 		}
 
 		_randomAnswerRow(){
 			let row = []
 			let validColors = validations.validColors()
+
+			console.log(validColors)
 			for (let i = 0; i < 4; i++){
-				let rand = Math.floor(Math.random() * 4)
+				let rand = Math.floor(Math.random() * 6)
 				row.push(validColors[rand])
 			}
 			return row
@@ -61,7 +63,7 @@ const Mastermind = (function(){
 			let answerArray = this.getAnswerRow()
 			let keyRow = []
 			let numBlackKey = numElementsInSamePosition(guessArray, answerArray)
-			let numWhiteKey = (numSameElements(guessArray, answerArray) - numBlackKey)
+			let numWhiteKey = (numSameElements(answerArray, guessArray) - numBlackKey)
 			for (let i = 0; i < numBlackKey; i++){
 				keyRow.push('black')
 			}
@@ -93,10 +95,16 @@ const Mastermind = (function(){
 
 		toJSON(){
 			return {
+				answerRow: this.getAnswerRow(),
 				guessRows: this.getGuessRows(),
 				keyRows: this.getKeyRows(),
 				gameWon: this.getGameWon(),
     		}
+		}
+
+		static fromJSON(json){
+			let obj = JSON.parse(json)
+			return new Mastermind(obj.answerRow, obj.guessRows, obj.keyRows, obj.gameWon)
 		}
 	}
 	return Mastermind;
