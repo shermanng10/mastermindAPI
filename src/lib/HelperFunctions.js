@@ -10,10 +10,11 @@ exports.numElementsInSamePosition = function(array1, array2){
 
 exports.numSameElements = function (array1, array2){
 	let num = 0
+	let tempArray = array2.slice()
 	for (let i = 0; i < array1.length; i++){
-		let index = array2.indexOf(array1[i])
+		let index = tempArray.indexOf(array1[i])
 		if (index > -1){
-			array2.splice(index, 1)
+			tempArray.splice(index, 1)
 			num ++
 		}
 	}
