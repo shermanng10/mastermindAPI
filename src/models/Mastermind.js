@@ -9,11 +9,11 @@ const Mastermind = (function(){
 	const _gameWon = new WeakMap()
 
 	class Mastermind {
-		constructor(answerRow, guessRows, keyRows, gameWon){
-			_answerRow.set(this, answerRow || this._randomAnswerRow())
-			_guessRows.set(this, guessRows || [])
-			_keyRows.set(this, keyRows || [])
-			_gameWon.set(this, gameWon || false)
+		constructor(options = {}){
+			_answerRow.set(this, options.answerRow || this._randomAnswerRow())
+			_guessRows.set(this, options.guessRows || [])
+			_keyRows.set(this, options.keyRows || [])
+			_gameWon.set(this, options.gameWon || false)
 		}
 
 		_randomAnswerRow(){
@@ -104,7 +104,7 @@ const Mastermind = (function(){
 
 		static fromJSON(json){
 			let obj = JSON.parse(json)
-			return new Mastermind(obj.answerRow, obj.guessRows, obj.keyRows, obj.gameWon)
+			return new Mastermind(obj)
 		}
 	}
 	return Mastermind;
