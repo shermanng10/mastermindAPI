@@ -26,6 +26,7 @@ router.post('/', (req, res, next) => {
 		let game = Mastermind.fromObj(user.getUserGame()) || new Mastermind()
  		if (req.body.newGame == 'true') {
 			users.update({userID: userID}, { $set: { game: new Mastermind() }})
+			return res.json({message: 'New game initialized!'})
 		}
 		if (req.body.guess){
 			let guess = req.body.guess
