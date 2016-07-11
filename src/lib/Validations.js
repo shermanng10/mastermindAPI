@@ -10,7 +10,7 @@
 			let validColors = this.validColors()
 			for (let i = 0; i < rowArray.length; i++){
 				if (!(validColors.indexOf(rowArray[i]) > -1)){
-					throw new InvalidInput('Not a valid color.git st')
+					throw new InvalidInput(`${rowArray[i]} is not a valid color`)
 				}
 			}
 			return rowArray

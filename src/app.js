@@ -4,17 +4,19 @@ import logger from 'morgan'
 import bodyParser from 'body-parser'
 
 import index from './routes/index'
-import users from './routes/users'
+import scoreboard from './routes/scoreboard'
+import play from './routes/play'
 
 let app = express()
 
 app.use(logger('dev'))
+//support for both json and url encoded bodies
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', routes)
-app.use('/scoreboard', scoreboard)
+app.use('/', index)
+app.use('/play', play)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -2,110 +2,96 @@ import {InvalidInput} from '../lib/Exceptions'
 import {validations} from '../lib/Validations'
 import {numElementsInSamePosition, numSameElements} from '../lib/HelperFunctions'
 
-const Mastermind = (function(){
-	const _answerRow = new WeakMap()
-	const _guessRows = new WeakMap()
-	const _keyRows = new WeakMap()
-	const _gameWon = new WeakMap()
+class Mastermind {
+	constructor(options = {}){
+		this.answerRow = options.answerRow || this._randomAnswerRow()
+		this.guessRows = options.guessRows || []
+		this.keyRows = options.keyRows || []
+		this.gameWon = options.gameWon || false
+	}
 
-	class Mastermind {
-		constructor(options = {}){
-			_answerRow.set(this, options.answerRow || this._randomAnswerRow())
-			_guessRows.set(this, options.guessRows || [])
-			_keyRows.set(this, options.keyRows || [])
-			_gameWon.set(this, options.gameWon || false)
+	_randomAnswerRow(){
+		let row = []
+		let validColors = validations.validColors()
+
+		for (let i = 0; i < 4; i++){
+			let rand = Math.floor(Math.random() * 6)
+			row.push(validColors[rand])
 		}
+		return row
+	}
 
-		_randomAnswerRow(){
-			let row = []
-			let validColors = validations.validColors()
+	getGameWon(){
+		return this.gameWon
+	}
 
-			console.log(validColors)
-			for (let i = 0; i < 4; i++){
-				let rand = Math.floor(Math.random() * 6)
-				row.push(validColors[rand])
-			}
-			return row
+	setGameWon(){
+		return this.gameWon = true
+	}
+
+	getAnswerRow(){
+		return this.answerRow
+	}
+
+	getKeyRows(){
+		return this.keyRows
+	}
+
+	getGuessRows(){
+		return this.guessRows
+	}
+
+	_addGuess(guessArray){
+		this.getGuessRows().push(guessArray)
+		return this.getGuessRows()
+	}
+
+	_addKeyRow(keyArray){
+		this.getKeyRows().push(keyArray)
+	}
+
+	_calculateKeyRow(guessArray){
+		let answerArray = this.getAnswerRow()
+		let keyRow = []
+		let numBlackKey = numElementsInSamePosition(guessArray, answerArray)
+		let numWhiteKey = (numSameElements(answerArray, guessArray) - numBlackKey)
+		for (let i = 0; i < numBlackKey; i++){
+			keyRow.push('black')
 		}
-
-		getGameWon(){
-			return _gameWon.get(this)
+		for (let i = 0; i < numWhiteKey; i++){
+			keyRow.push('white')
 		}
+		return keyRow
+	}
 
-		setGameWon(){
-			_gameWon.set(this, true)
-			return true
-		}
-
-		getAnswerRow(){
-			return _answerRow.get(this)
-		}
-
-		getKeyRows(){
-			return _keyRows.get(this)
-		}
-
-		getGuessRows(){
-			return _guessRows.get(this)
-		}
-
-		_addGuess(guessArray){
-			this.getGuessRows().push(guessArray)
-			return this.getGuessRows()
-		}
-
-		_addKeyRow(keyArray){
-			this.getKeyRows().push(keyArray)
-			return this.getKeyRows()
-		}
-
-		_calculateKeyRow(guessArray){
-			let answerArray = this.getAnswerRow()
-			let keyRow = []
-			let numBlackKey = numElementsInSamePosition(guessArray, answerArray)
-			let numWhiteKey = (numSameElements(answerArray, guessArray) - numBlackKey)
-			for (let i = 0; i < numBlackKey; i++){
-				keyRow.push('black')
-			}
-			for (let i = 0; i < numWhiteKey; i++){
-				keyRow.push('white')
-			}
-			return keyRow
-		}
-
-		_checkGuessRow(guessArray){
-			let answerArray = this.getAnswerRow()
-			if (numElementsInSamePosition(guessArray, answerArray) == 4){
-				return this.setGameWon()
-			} else {
-				this._addKeyRow(this._calculateKeyRow(guessArray))
-			}
-		}
-
-		checkVictory(guessArray){
-			validations.validateGuess(guessArray)
-			this._addGuess(guessArray)
-			if (this.getGuessRows().length >= 12 && this.getGameWon() == false){
-				return false
-			} 
-			else if (this.getGuessRows().length <= 12 && this.getGameWon() == false){
-				return this._checkGuessRow(guessArray)
-			}
-		}
-
-		toJSON(){
-			return {
-				answerRow: this.getAnswerRow(),
-				guessRows: this.getGuessRows(),
-				keyRows: this.getKeyRows(),
-				gameWon: this.getGameWon(),
-    		}
-		}
-
-		static fromJSON(json){
-			let obj = JSON.parse(json)
-			return new Mastermind(obj)
+	_checkGuessRow(guessArray){
+		let answerArray = this.getAnswerRow()
+		if (numElementsInSamePosition(guessArray, answerArray) == 4){
+			this.setGameWon()
+			return 'Congrats! You were right!'
+		} else {
+			this._addKeyRow(this._calculateKeyRow(guessArray))
+			return { guesses: this.getGuessRows(), keys: this.getKeyRows() }
 		}
 	}
-	return Mastermind;
-}());
+
+	checkVictory(guessArray){
+		if (this.getGameWon() == true){
+			return "You've already won!"
+		} else if (this.getGuessRows().length >= 12 && this.getGameWon() == false){
+			return "You've guessed 12 times and lost!"
+		} else if (this.getGuessRows().length <= 12 && this.getGameWon() == false){
+			validations.validateGuess(guessArray)
+			this._addGuess(guessArray)
+			return this._checkGuessRow(guessArray)
+		}
+	}
+
+	static fromObj(obj){
+		return new Mastermind(obj)
+	}
+}
+
+ module.exports = {Mastermind}
+
+module.exports = { Mastermind }
